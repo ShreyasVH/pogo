@@ -1,0 +1,1 @@
+GET     /pogo/types                     controllers.TypeController.getAll

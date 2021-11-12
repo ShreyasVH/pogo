@@ -1,0 +1,1 @@
+web: target/universal/stage/bin/pogo -Dhttp.port=${PORT} -jvm-debug "8000"
