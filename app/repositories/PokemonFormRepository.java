@@ -16,14 +16,14 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CompletableFuture;
 import play.db.ebean.EbeanDynamicEvolutions;
 
-public class TypeRepository
+public class PokemonFormRepository
 {
 	private final EbeanServer db;
 	private final EbeanDynamicEvolutions ebeanDynamicEvolutions;
 	private final DatabaseExecutionContext databaseExecutionContext;
 
 	@Inject
-	public TypeRepository
+	public PokemonFormRepository
 	(
 		EbeanConfig ebeanConfig,
 		EbeanDynamicEvolutions ebeanDynamicEvolutions,
@@ -52,22 +52,5 @@ public class TypeRepository
 
 			return types;
 		}, this.databaseExecutionContext);
-	}
-
-	public List<Type> get(List<Integer> ids)
-	{
-		List<Type> types;
-
-		try
-		{
-			types = this.db.find(Type.class).where().in("id", ids).orderBy("id ASC").findList();
-		}
-		catch(Exception ex)
-		{
-			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
-			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
-		}
-
-		return types;
 	}
 }

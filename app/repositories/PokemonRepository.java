@@ -6,24 +6,21 @@ import io.ebean.Ebean;
 import io.ebean.EbeanServer;
 import play.db.ebean.EbeanConfig;
 
-import models.Type;
-import java.util.List;
+import models.Pokemon;
 
 import com.google.inject.Inject;
 import modules.DatabaseExecutionContext;
 
-import java.util.concurrent.CompletionStage;
-import java.util.concurrent.CompletableFuture;
 import play.db.ebean.EbeanDynamicEvolutions;
 
-public class TypeRepository
+public class PokemonRepository
 {
 	private final EbeanServer db;
 	private final EbeanDynamicEvolutions ebeanDynamicEvolutions;
 	private final DatabaseExecutionContext databaseExecutionContext;
 
 	@Inject
-	public TypeRepository
+	public PokemonRepository
 	(
 		EbeanConfig ebeanConfig,
 		EbeanDynamicEvolutions ebeanDynamicEvolutions,
@@ -35,32 +32,27 @@ public class TypeRepository
 		this.databaseExecutionContext = databaseExecutionContext;
 	}
 
-	public CompletionStage<List<Type>> getAll()
+	public Pokemon save(Pokemon pokemon)
 	{
-		return CompletableFuture.supplyAsync(() -> {
-			List<Type> types;
-
-			try
-			{
-				types = this.db.find(Type.class).orderBy("id ASC").findList();
-			}
-			catch(Exception ex)
-			{
-				String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
-				throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
-			}
-
-			return types;
-		}, this.databaseExecutionContext);
+		try
+		{
+			this.db.save(pokemon);
+			return pokemon;
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
 	}
 
-	public List<Type> get(List<Integer> ids)
+	public Pokemon get(Long id)
 	{
-		List<Type> types;
+		Pokemon pokemon = null;
 
 		try
 		{
-			types = this.db.find(Type.class).where().in("id", ids).orderBy("id ASC").findList();
+			pokemon = this.db.find(Pokemon.class).where().eq("id", id).findOne();
 		}
 		catch(Exception ex)
 		{
@@ -68,6 +60,6 @@ public class TypeRepository
 			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
 		}
 
-		return types;
+		return pokemon;
 	}
 }

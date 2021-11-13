@@ -3,3 +3,5 @@ GET     /pogo/types                     controllers.TypeController.getAll
 GET     /pogo/regions                   controllers.RegionController.getAll
 
 GET     /pogo/items                   controllers.ItemController.getAll
+
+POST    /pogo/pokemon                controllers.PokemonController.create(request: Request)
