@@ -12,14 +12,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "regions")
+@Table(name = "items")
 @Getter
 @Setter
 @Cache(enableQueryCache=true)
 @CacheQueryTuning(maxSecsToLive = 3600)
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Region extends Model
+public class Item extends Model
 {
 	@Id
 	@Column(name = "id", columnDefinition = "int UNSIGNED", nullable = false)
