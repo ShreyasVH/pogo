@@ -6,7 +6,7 @@ import io.ebean.Ebean;
 import io.ebean.EbeanServer;
 import play.db.ebean.EbeanConfig;
 
-import models.Type;
+import models.Region;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -16,14 +16,14 @@ import java.util.concurrent.CompletionStage;
 import java.util.concurrent.CompletableFuture;
 import play.db.ebean.EbeanDynamicEvolutions;
 
-public class TypeRepository
+public class RegionRepository
 {
 	private final EbeanServer db;
 	private final EbeanDynamicEvolutions ebeanDynamicEvolutions;
 	private final DatabaseExecutionContext databaseExecutionContext;
 
 	@Inject
-	public TypeRepository
+	public RegionRepository
 	(
 		EbeanConfig ebeanConfig,
 		EbeanDynamicEvolutions ebeanDynamicEvolutions,
@@ -35,14 +35,14 @@ public class TypeRepository
 		this.databaseExecutionContext = databaseExecutionContext;
 	}
 
-	public CompletionStage<List<Type>> getAll()
+	public CompletionStage<List<Region>> getAll()
 	{
 		return CompletableFuture.supplyAsync(() -> {
-			List<Type> types;
+			List<Region> regions;
 
 			try
 			{
-				types = this.db.find(Type.class).orderBy("id ASC").findList();
+				regions = this.db.find(Region.class).orderBy("id ASC").findList();
 			}
 			catch(Exception ex)
 			{
@@ -50,7 +50,7 @@ public class TypeRepository
 				throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
 			}
 
-			return types;
+			return regions;
 		}, this.databaseExecutionContext);
 	}
 }

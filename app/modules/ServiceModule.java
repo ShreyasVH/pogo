@@ -11,5 +11,6 @@ public class ServiceModule extends AbstractModule
 	public void configure()
 	{
 		bind(TypeService.class).to(TypeServiceImpl.class).asEagerSingleton();
+		bind(RegionService.class).to(RegionServiceImpl.class).asEagerSingleton();
 	}
 }

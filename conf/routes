@@ -1,1 +1,3 @@
 GET     /pogo/types                     controllers.TypeController.getAll
+
+GET     /pogo/regions                   controllers.RegionController.getAll
