@@ -15,7 +15,7 @@ services:
       - /app/target
       - /app/project/project
       - /app/project/target
-    container_name: cric-api
+    container_name: pogo-api
     stdin_open: true
     tty: true
     env_file:
