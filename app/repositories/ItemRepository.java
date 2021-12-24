@@ -4,6 +4,7 @@ import enums.ErrorCode;
 import exceptions.DBInteractionException;
 import io.ebean.Ebean;
 import io.ebean.EbeanServer;
+import models.Type;
 import play.db.ebean.EbeanConfig;
 
 import models.Item;
@@ -52,5 +53,22 @@ public class ItemRepository
 
 			return items;
 		}, this.databaseExecutionContext);
+	}
+
+	public Item get(Long id)
+	{
+		Item item = null;
+
+		try
+		{
+			item = this.db.find(Item.class).where().eq("id", id).findOne();
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+
+		return item;
 	}
 }

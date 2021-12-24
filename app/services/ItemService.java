@@ -9,4 +9,6 @@ import java.util.concurrent.CompletionStage;
 public interface ItemService
 {
 	CompletionStage<List<Item>> getAll();
+
+	Item get(Long id);
 }

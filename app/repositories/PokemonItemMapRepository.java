@@ -5,8 +5,10 @@ import exceptions.DBInteractionException;
 import io.ebean.Ebean;
 import io.ebean.EbeanServer;
 import models.PokemonItemMap;
+import models.PokemonTypeMap;
 import play.db.ebean.EbeanConfig;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.inject.Inject;
@@ -47,5 +49,22 @@ public class PokemonItemMapRepository
 				throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
 			}
 		}
+	}
+
+	public List<PokemonItemMap> get(Long pokemonId)
+	{
+		List<PokemonItemMap> list = new ArrayList<>();
+
+		try
+		{
+			list = this.db.find(PokemonItemMap.class).where().eq("pokemonId", pokemonId).findList();
+		}
+		catch (Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+
+		return list;
 	}
 }

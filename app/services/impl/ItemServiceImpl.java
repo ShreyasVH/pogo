@@ -28,4 +28,10 @@ public class ItemServiceImpl implements ItemService
 	{
 		return this.itemRepository.getAll();
 	}
+
+    @Override
+    public Item get(Long id)
+	{
+        return this.itemRepository.get(id);
+    }
 }

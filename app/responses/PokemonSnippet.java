@@ -2,9 +2,7 @@ package responses;
 
 import lombok.Getter;
 import lombok.Setter;
-import models.Pokemon;
-import models.Region;
-import models.Type;
+import models.*;
 
 import java.util.List;
 
@@ -16,7 +14,8 @@ public class PokemonSnippet
     private String name;
     private Integer number;
     private Region region;
-    private List<Type> types;
+    private Pokemon candyPokemon;
+    private Integer candiesToEvolve;
 
     public PokemonSnippet(Pokemon pokemon)
     {

@@ -26,8 +26,8 @@ public class PokemonCandyMap extends Model
     private Long id;
 
     @Column
-    private Long pokemonId;
+    private Integer pokemonNumber;
 
     @Column
-    private Long candyPokemonId;
+    private Integer candyPokemonNumber;
 }

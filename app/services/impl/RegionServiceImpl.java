@@ -28,4 +28,10 @@ public class RegionServiceImpl implements RegionService
 	{
 		return this.regionRepository.getAll();
 	}
+
+	@Override
+	public Region get(Long id)
+	{
+		return this.regionRepository.get(id);
+	}
 }

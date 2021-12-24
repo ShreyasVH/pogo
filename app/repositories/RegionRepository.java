@@ -53,4 +53,21 @@ public class RegionRepository
 			return regions;
 		}, this.databaseExecutionContext);
 	}
+
+	public Region get(Long id)
+	{
+		Region region = null;
+
+		try
+		{
+			region = this.db.find(Region.class).where().eq("id", id).findOne();
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+
+		return region;
+	}
 }

@@ -1,4 +1,4 @@
-package requests;
+package requests.forms;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import enums.ErrorCode;
@@ -7,20 +7,16 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CreatePokemonRequest
+public class CreateFormRequest
 {
     private String name;
     private Integer number;
-    private Long regionId;
-    private Integer candiesToEvolve = 0;
-    private Integer candyPokemonNumber;
     private String imageUrl;
+    private Long releaseDate;
+//    private boolean isAlolan;
 
     public void validate()
     {
@@ -34,19 +30,9 @@ public class CreatePokemonRequest
             throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Number cannot be empty");
         }
 
-        if(this.number <= 0)
+        if(this.number < 0)
         {
             throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Invalid number");
-        }
-
-        if(this.regionId == null)
-        {
-            throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "RegionId cannot be empty");
-        }
-
-        if(this.regionId <= 0)
-        {
-            throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Invalid regionId");
         }
     }
 }

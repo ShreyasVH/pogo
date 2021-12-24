@@ -14,6 +14,7 @@ import java.util.concurrent.CompletionStage;
 import play.libs.concurrent.HttpExecutionContext;
 
 import requests.CreatePokemonRequest;
+import requests.UpdatePokemonRequest;
 import services.PokemonService;
 import utils.Utils;
 
@@ -47,6 +48,38 @@ public class PokemonController extends BaseController
 			}
 
 			return this.pokemonService.create(createRequest);
-		}, this.httpExecutionContext.current()).thenApplyAsync(match -> ok(Json.toJson(match)), this.httpExecutionContext.current());
+		}, this.httpExecutionContext.current()).thenApplyAsync(pokemon -> ok(Json.toJson(pokemon)), this.httpExecutionContext.current());
+	}
+
+	public CompletionStage<Result> update(Integer number, Http.Request request)
+	{
+		return CompletableFuture.supplyAsync(() -> {
+			UpdatePokemonRequest updatePokemonRequest;
+			try
+			{
+				updatePokemonRequest = Utils.convertObject(request.body().asJson(), UpdatePokemonRequest.class);
+			}
+			catch(Exception ex)
+			{
+				throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), ErrorCode.INVALID_REQUEST.getDescription());
+			}
+
+			return this.pokemonService.update(updatePokemonRequest, number);
+		}, this.httpExecutionContext.current()).thenApplyAsync(pokemon -> ok(Json.toJson(pokemon)), this.httpExecutionContext.current());
+	}
+
+	public CompletionStage<Result> get(Long id)
+	{
+		return CompletableFuture.supplyAsync(() -> this.pokemonService.get(id)).thenApplyAsync(pokemonSnippet -> ok(Json.toJson(pokemonSnippet)), this.httpExecutionContext.current());
+	}
+
+	public CompletionStage<Result> getByNumber(Integer number)
+	{
+		return CompletableFuture.supplyAsync(() -> this.pokemonService.getByNumber(number)).thenApplyAsync(pokemonSnippet -> ok(Json.toJson(pokemonSnippet)), this.httpExecutionContext.current());
+	}
+
+	public CompletionStage<Result> getAll()
+	{
+		return CompletableFuture.supplyAsync(this.pokemonService::getAll).thenApplyAsync(pokemons -> ok(Json.toJson(pokemons)), this.httpExecutionContext.current());
 	}
 }

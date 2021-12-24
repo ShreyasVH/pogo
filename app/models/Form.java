@@ -10,9 +10,10 @@ import io.ebean.annotation.CacheQueryTuning;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import requests.forms.CreateFormRequest;
 
 @Entity
-@Table(name = "pokemons")
+@Table(name = "forms")
 @Getter
 @Setter
 @Cache(enableQueryCache=true)
@@ -26,14 +27,40 @@ public class Form extends Model
     private Long id;
 
     @Column
+    private Integer pokemonNumber;
+
+    @Column
     private String name;
 
     @Column
-    private Integer number;
+    private String imageUrl;
 
     @Column
-    private Integer regionId;
+    private Long releaseDate;
 
-    @Column
-    private Integer candiesToEvolve;
+//    @Column
+//    private boolean isAlolan;
+//
+//    @Column
+//    private boolean isGalarian;
+//
+//    @Column
+//    private boolean isShadow;
+//
+//    @Column
+//    private boolean isShiny;
+//
+//    @Column
+//    private boolean isFemale;
+//
+//    @Column
+//    private boolean isCostumed;
+
+    public Form(CreateFormRequest request)
+    {
+        this.name = request.getName();
+        this.imageUrl = request.getImageUrl();
+        this.releaseDate = request.getReleaseDate();
+        this.pokemonNumber = request.getNumber();
+    }
 }

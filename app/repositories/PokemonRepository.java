@@ -13,6 +13,9 @@ import modules.DatabaseExecutionContext;
 
 import play.db.ebean.EbeanDynamicEvolutions;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class PokemonRepository
 {
 	private final EbeanServer db;
@@ -61,5 +64,56 @@ public class PokemonRepository
 		}
 
 		return pokemon;
+	}
+
+	public Pokemon getByNumber(Integer number)
+	{
+		Pokemon pokemon = null;
+
+		try
+		{
+			pokemon = this.db.find(Pokemon.class).where().eq("number", number).findOne();
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+
+		return pokemon;
+	}
+
+	public Pokemon getByName(String name)
+	{
+		Pokemon pokemon = null;
+
+		try
+		{
+			pokemon = this.db.find(Pokemon.class).where().eq("name", name).findOne();
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+
+		return pokemon;
+	}
+
+	public List<Pokemon> getAll()
+	{
+		List<Pokemon> pokemons = new ArrayList<>();
+
+		try
+		{
+			pokemons = this.db.find(Pokemon.class).orderBy("number ASC").findList();
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+
+		return pokemons;
 	}
 }

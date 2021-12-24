@@ -44,4 +44,21 @@ public class PokemonCandyMapRepository
 		}
 	}
 
+	public PokemonCandyMap getByNumber(Integer number)
+	{
+		PokemonCandyMap pokemonCandyMap = null;
+
+		try
+		{
+			pokemonCandyMap = this.db.find(PokemonCandyMap.class).where().eq("pokemonNumber", number).findOne();
+		}
+		catch (Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+
+		return pokemonCandyMap;
+	}
+
 }

@@ -9,4 +9,6 @@ import java.util.concurrent.CompletionStage;
 public interface RegionService
 {
 	CompletionStage<List<Region>> getAll();
+
+	Region get(Long id);
 }

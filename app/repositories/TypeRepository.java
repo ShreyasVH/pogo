@@ -54,7 +54,7 @@ public class TypeRepository
 		}, this.databaseExecutionContext);
 	}
 
-	public List<Type> get(List<Integer> ids)
+	public List<Type> get(List<Long> ids)
 	{
 		List<Type> types;
 

@@ -4,4 +4,13 @@ GET     /pogo/regions                   controllers.RegionController.getAll
 
 GET     /pogo/items                   controllers.ItemController.getAll
 
+GET     /pogo/pokemon/all           controllers.PokemonController.getAll
 POST    /pogo/pokemon                controllers.PokemonController.create(request: Request)
+PUT     /pogo/pokemon/:number               controllers.PokemonController.update(number: Integer, request: Request)
+GET     /pogo/pokemon/:id            controllers.PokemonController.get(id: Long)
+GET     /pogo/pokemon/num/:num            controllers.PokemonController.getByNumber(num: Integer)
+
+GET     /pogo/forms/:id                 controllers.FormController.get(id: Long)
+POST    /pogo/forms                     controllers.FormController.create(request: Request)
+PUT     /pogo/forms/:id                 controllers.FormController.update(id: Long, request: Request)
+POST    /pogo/forms/filter              controllers.FormController.filter(request: Request)
