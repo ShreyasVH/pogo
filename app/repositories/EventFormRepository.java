@@ -74,4 +74,17 @@ public class EventFormRepository
         }
         return forms;
     }
+
+    public void delete(List<EventForm> forms)
+    {
+        try
+        {
+            this.db.deleteAll(forms);
+        }
+        catch(Exception ex)
+        {
+            String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+            throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+        }
+    }
 }

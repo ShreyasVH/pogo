@@ -14,9 +14,11 @@ import repositories.EventFormRepository;
 import repositories.EventRepository;
 import repositories.FormRepository;
 import requests.events.CreateRequest;
+import requests.events.UpdateRequest;
 import responses.EventSnippet;
 import services.EventService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -108,5 +110,89 @@ public class EventServiceImpl implements EventService
     public EventSnippet get(Long id)
     {
         return this.eventSnippet(this.eventRepository.get(id));
+    }
+
+    @Override
+    public Event update(UpdateRequest request, Long id)
+    {
+        request.validate();
+
+        Event existingEvent = this.eventRepository.get(id);
+        if(null == existingEvent)
+        {
+            throw new NotFoundException("Event");
+        }
+
+        boolean isUpdateRequired = false;
+
+        if(request.getName() != null && !request.getName().equals(existingEvent.getName()))
+        {
+            isUpdateRequired = true;
+            existingEvent.setName(request.getName());
+        }
+
+        if(request.getStartTime() != null && !request.getStartTime().equals(existingEvent.getStartTime()))
+        {
+            isUpdateRequired = true;
+            existingEvent.setStartTime(request.getStartTime());
+        }
+
+        if(request.getEndTime() != null && !request.getEndTime().equals(existingEvent.getEndTime()))
+        {
+            isUpdateRequired = true;
+            existingEvent.setEndTime(request.getEndTime());
+        }
+
+        Transaction transaction = Ebean.beginTransaction();
+
+        try
+        {
+            if(isUpdateRequired)
+            {
+                existingEvent = this.eventRepository.save(existingEvent);
+            }
+
+            if(request.getForms() != null)
+            {
+                List<EventForm> existingForms = this.eventFormRepository.getByEventId(id);
+                List<EventForm> formsToDelete = new ArrayList<>();
+                List<Long> existingFormIds = existingForms.stream().map(form -> {
+                    if(!request.getForms().contains(form.getFormId()))
+                    {
+                        formsToDelete.add(form);
+                    }
+
+                    return form.getFormId();
+                })
+                .collect(Collectors.toList());
+
+                this.eventFormRepository.delete(formsToDelete);
+
+                List<EventForm> formsToAdd = new ArrayList<>();
+                for(Long formId: request.getForms())
+                {
+                    if(!existingFormIds.contains(formId))
+                    {
+                        EventForm form = new EventForm();
+                        form.setEventId(id);
+                        form.setFormId(formId);
+
+                        formsToAdd.add(form);
+                    }
+                }
+
+                this.eventFormRepository.save(formsToAdd);
+            }
+
+            transaction.commit();
+            transaction.end();
+        }
+        catch(Exception ex)
+        {
+            transaction.rollback();
+            transaction.end();
+        }
+
+        return existingEvent;
     }
 }

@@ -8,12 +8,8 @@ import play.libs.concurrent.HttpExecutionContext;
 import play.mvc.Http;
 import play.mvc.Result;
 import requests.events.CreateRequest;
-import requests.forms.CreateFormRequest;
-import requests.forms.FilterRequest;
-import requests.forms.UpdateRequest;
+import requests.events.UpdateRequest;
 import services.EventService;
-import services.FormService;
-import services.PokemonService;
 import utils.Utils;
 
 import java.util.concurrent.CompletableFuture;
@@ -57,5 +53,22 @@ public class EventController extends BaseController
         return CompletableFuture
             .supplyAsync(() -> this.eventService.get(id), this.httpExecutionContext.current())
             .thenApplyAsync(match -> ok(Json.toJson(match)), this.httpExecutionContext.current());
+    }
+
+    public CompletionStage<Result> update(Long id, Http.Request request)
+    {
+        return CompletableFuture.supplyAsync(() -> {
+            UpdateRequest updateRequest;
+            try
+            {
+                updateRequest = Utils.convertObject(request.body().asJson(), UpdateRequest.class);
+            }
+            catch(Exception ex)
+            {
+                throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), ErrorCode.INVALID_REQUEST.getDescription());
+            }
+
+            return this.eventService.update(updateRequest, id);
+        }, this.httpExecutionContext.current()).thenApplyAsync(match -> ok(Json.toJson(match)), this.httpExecutionContext.current());
     }
 }
