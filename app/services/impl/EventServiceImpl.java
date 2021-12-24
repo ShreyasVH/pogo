@@ -14,8 +14,10 @@ import repositories.EventFormRepository;
 import repositories.EventRepository;
 import repositories.FormRepository;
 import requests.events.CreateRequest;
+import responses.EventSnippet;
 import services.EventService;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class EventServiceImpl implements EventService
@@ -35,6 +37,22 @@ public class EventServiceImpl implements EventService
         this.eventRepository = eventRepository;
         this.eventFormRepository = eventFormRepository;
         this.formRepository = formRepository;
+    }
+
+    public EventSnippet eventSnippet(Event event)
+    {
+        EventSnippet eventSnippet = new EventSnippet(event);
+
+        List<EventForm> forms = this.eventFormRepository.getByEventId(event.getId());
+
+        eventSnippet.setForms(this.formRepository.get(
+            forms
+                .stream()
+                .map(EventForm::getFormId)
+                .collect(Collectors.toList())
+        ));
+
+        return eventSnippet;
     }
 
     @Override
@@ -84,5 +102,11 @@ public class EventServiceImpl implements EventService
             transaction.end();
             throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), ErrorCode.INVALID_REQUEST.getDescription());
         }
+    }
+
+    @Override
+    public EventSnippet get(Long id)
+    {
+        return this.eventSnippet(this.eventRepository.get(id));
     }
 }

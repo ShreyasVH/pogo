@@ -59,4 +59,19 @@ public class EventFormRepository
             throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
         }
     }
+
+    public List<EventForm> getByEventId(Long id)
+    {
+        List<EventForm> forms = new ArrayList<>();
+        try
+        {
+            forms = this.db.find(EventForm.class).where().eq("eventId", id).findList();
+        }
+        catch(Exception ex)
+        {
+            String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+            throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+        }
+        return forms;
+    }
 }

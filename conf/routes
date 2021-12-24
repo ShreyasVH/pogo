@@ -16,3 +16,4 @@ PUT     /pogo/forms/:id                 controllers.FormController.update(id: Lo
 POST    /pogo/forms/filter              controllers.FormController.filter(request: Request)
 
 POST    /pogo/events                    controllers.EventController.create(request: Request)
+GET     /pogo/events/:id                controllers.EventController.get(id: Long)

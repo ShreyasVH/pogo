@@ -92,6 +92,23 @@ public class FormRepository
 		return form;
 	}
 
+	public List<Form> get(List<Long> ids)
+	{
+		List<Form> forms = new ArrayList<>();
+
+		try
+		{
+			forms = this.db.find(Form.class).where().in("id", ids).findList();
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
+
+		return forms;
+	}
+
 	public Form getByNameAndNumber(String name, Integer number)
 	{
 		Form form;

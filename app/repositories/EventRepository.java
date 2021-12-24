@@ -73,4 +73,19 @@ public class EventRepository
         }
         return event;
     }
+
+    public Event get(Long id)
+    {
+        Event event = null;
+        try
+        {
+            event = this.db.find(Event.class).where().eq("id", id).findOne();
+        }
+        catch(Exception ex)
+        {
+            String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+            throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+        }
+        return event;
+    }
 }

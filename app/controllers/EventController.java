@@ -51,4 +51,11 @@ public class EventController extends BaseController
             return this.eventService.add(createRequest);
         }, this.httpExecutionContext.current()).thenApplyAsync(match -> ok(Json.toJson(match)), this.httpExecutionContext.current());
     }
+
+    public CompletionStage<Result> get(Long id)
+    {
+        return CompletableFuture
+            .supplyAsync(() -> this.eventService.get(id), this.httpExecutionContext.current())
+            .thenApplyAsync(match -> ok(Json.toJson(match)), this.httpExecutionContext.current());
+    }
 }
