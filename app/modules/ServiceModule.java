@@ -15,5 +15,6 @@ public class ServiceModule extends AbstractModule
 		bind(ItemService.class).to(ItemServiceImpl.class).asEagerSingleton();
 		bind(PokemonService.class).to(PokemonServiceImpl.class).asEagerSingleton();
 		bind(FormService.class).to(FormServiceImpl.class).asEagerSingleton();
+		bind(EventService.class).to(EventServiceImpl.class).asEagerSingleton();
 	}
 }

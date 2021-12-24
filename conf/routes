@@ -14,3 +14,5 @@ GET     /pogo/forms/:id                 controllers.FormController.get(id: Long)
 POST    /pogo/forms                     controllers.FormController.create(request: Request)
 PUT     /pogo/forms/:id                 controllers.FormController.update(id: Long, request: Request)
 POST    /pogo/forms/filter              controllers.FormController.filter(request: Request)
+
+POST    /pogo/events                    controllers.EventController.create(request: Request)
