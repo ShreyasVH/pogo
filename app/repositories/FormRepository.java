@@ -115,7 +115,7 @@ public class FormRepository
 		response.setOffset(filterRequest.getOffset());
 		List<Map<String, Object>> forms = new ArrayList<>();
 
-		String query = "select f.name as formName, f.pokemon_number as pokemonNumber, p.name as pokemonName , f.image_url as imageUrl from forms f " +
+		String query = "select f.name as formName, f.id as formId, f.pokemon_number as pokemonNumber, p.name as pokemonName , f.image_url as imageUrl from forms f " +
 				"inner join pokemons p on p.number = f.pokemon_number";
 
 		String countQuery = "select count(distinct f.id) as count from forms f " +
@@ -187,6 +187,7 @@ public class FormRepository
 			for(SqlRow row: result)
 			{
 				Map<String, Object> entry = new HashMap<>();
+				entry.put("formId", row.getLong("formId"));
 				entry.put("formName", row.getString("formName"));
 				entry.put("pokemonName", row.getString("pokemonName"));
 				entry.put("pokemonNumber", row.getInteger("pokemonNumber"));
