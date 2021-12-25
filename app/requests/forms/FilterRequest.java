@@ -15,5 +15,6 @@ public class FilterRequest
     private Integer offset = 0;
     private Map<String, List<String>> filters = new HashMap<>();
     private Map<String, Boolean> booleanFilters = new HashMap<>();
+    private Map<String, Map<String, String>> rangeFilters = new HashMap<>();
     private Map<String, String> sortMap = new HashMap<>();
 }

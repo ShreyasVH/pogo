@@ -88,4 +88,124 @@ public class EventRepository
         }
         return event;
     }
+
+    public FilterResponse<Map<String, Object>> filter(FilterRequest filterRequest)
+    {
+        FilterResponse<Map<String, Object>> response = new FilterResponse<>();
+        response.setOffset(filterRequest.getOffset());
+        List<Map<String, Object>> events = new ArrayList<>();
+
+        String query = "SELECT id, name, start_time AS startTime, end_time AS endTime FROM `events`";
+
+        String countQuery = "SELECT COUNT(*) as count FROM `events`";
+
+        //where
+        List<String> whereQueryParts = new ArrayList<>();
+
+        for(Map.Entry<String, List<String>> entry: filterRequest.getFilters().entrySet())
+        {
+            String field = entry.getKey();
+            List<String> valueList = entry.getValue();
+
+            String fieldNameWithTablePrefix = getFieldNameForDisplay(field);
+            if(!fieldNameWithTablePrefix.isEmpty() && !valueList.isEmpty())
+            {
+                whereQueryParts.add(fieldNameWithTablePrefix + " in (" + String.join(", ", valueList) + ")");
+            }
+        }
+
+        for(Map.Entry<String, Map<String, String>> entry: filterRequest.getRangeFilters().entrySet())
+        {
+            String field = entry.getKey();
+            Map<String, String> rangeValues = entry.getValue();
+
+            String fieldNameWithTablePrefix = getFieldNameForDisplay(field);
+            if(!fieldNameWithTablePrefix.isEmpty() && !rangeValues.isEmpty())
+            {
+                if(rangeValues.containsKey("from"))
+                {
+                    whereQueryParts.add(fieldNameWithTablePrefix + " >= " +  rangeValues.get("from"));
+                }
+                if(rangeValues.containsKey("to"))
+                {
+                    whereQueryParts.add(fieldNameWithTablePrefix + " <= " +  rangeValues.get("to"));
+                }
+
+            }
+        }
+
+        if(!whereQueryParts.isEmpty())
+        {
+            query += " where " + String.join(" and ", whereQueryParts);
+            countQuery += " where " + String.join(" and ", whereQueryParts);
+        }
+
+        //sort
+        List<String> sortList = new ArrayList<>();
+        for(Map.Entry<String, String> entry: filterRequest.getSortMap().entrySet())
+        {
+            String field = entry.getKey();
+            String value = entry.getValue();
+
+            String sortFieldName = getFieldNameForDisplay(field);
+            if(!sortFieldName.isEmpty())
+            {
+                sortList.add(sortFieldName + " " + value);
+            }
+        }
+        if(sortList.isEmpty())
+        {
+            sortList.add(getFieldNameForDisplay("start_time") + " desc");
+        }
+        query += " order by " + String.join(", ", sortList);
+
+        //offset limit
+        query += " limit " + Integer.min(30, filterRequest.getCount()) + " offset " + filterRequest.getOffset();
+
+        try
+        {
+            SqlQuery sqlCountQuery = this.db.createSqlQuery(countQuery);
+            List<SqlRow> countResult = sqlCountQuery.findList();
+            response.setTotalCount(countResult.get(0).getInteger("count"));
+
+            SqlQuery sqlQuery = this.db.createSqlQuery(query);
+            List<SqlRow> result = sqlQuery.findList();
+
+            for(SqlRow row: result)
+            {
+                Map<String, Object> entry = new HashMap<>();
+                entry.put("id", row.getLong("id"));
+                entry.put("name", row.getString("name"));
+                entry.put("startTime", row.getLong("startTime"));
+                entry.put("endTime", row.getLong("endTime"));
+
+                events.add(entry);
+            }
+        }
+        catch(Exception ex)
+        {
+            String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+            throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+        }
+
+        response.setList(events);
+
+        return response;
+    }
+
+    private String getFieldNameForDisplay(String name)
+    {
+        String fieldName = name;
+
+        switch(name)
+        {
+            case "startTime":
+                fieldName = "start_time";
+                break;
+            case "endTime":
+                fieldName = "end_time";
+                break;
+        }
+        return fieldName;
+    }
 }

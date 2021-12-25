@@ -15,11 +15,14 @@ import repositories.EventRepository;
 import repositories.FormRepository;
 import requests.events.CreateRequest;
 import requests.events.UpdateRequest;
+import requests.forms.FilterRequest;
 import responses.EventSnippet;
+import responses.FilterResponse;
 import services.EventService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class EventServiceImpl implements EventService
@@ -194,5 +197,11 @@ public class EventServiceImpl implements EventService
         }
 
         return existingEvent;
+    }
+
+    @Override
+    public FilterResponse<Map<String, Object>> filter(FilterRequest filterRequest)
+    {
+        return this.eventRepository.filter(filterRequest);
     }
 }
