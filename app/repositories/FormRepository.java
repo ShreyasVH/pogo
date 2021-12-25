@@ -189,11 +189,12 @@ public class FormRepository
 		if(sortList.isEmpty())
 		{
 			sortList.add(getFieldNameForDisplay("number") + " asc");
+			sortList.add(getFieldNameForDisplay("formId") + " asc");
 		}
 		query += " order by " + String.join(", ", sortList);
 
 		//offset limit
-		query += " limit " + Integer.min(30, filterRequest.getCount()) + " offset " + filterRequest.getOffset();
+		query += " limit " + Integer.min(100, filterRequest.getCount()) + " offset " + filterRequest.getOffset();
 
 		try
 		{
@@ -259,6 +260,8 @@ public class FormRepository
 			case "type":
 				fieldName = "type";
 				break;
+			case "formId":
+				fieldName = "formId";
 		}
 
 		return fieldName;
