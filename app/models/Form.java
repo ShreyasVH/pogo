@@ -56,6 +56,9 @@ public class Form extends Model
 //    @Column
 //    private boolean isCostumed;
 
+    @Column
+    private boolean isReleased;
+
     public Form(CreateFormRequest request)
     {
         this.name = request.getName();

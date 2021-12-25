@@ -140,6 +140,9 @@ public class FormRepository
 
 		//where
 		List<String> whereQueryParts = new ArrayList<>();
+
+		whereQueryParts.add(getFieldNameWithTablePrefix("is_released") + " = 1");
+
 		for(Map.Entry<String, List<String>> entry: filterRequest.getFilters().entrySet())
 		{
 			String field = entry.getKey();
@@ -235,6 +238,9 @@ public class FormRepository
 				break;
 			case "type":
 				fieldName = "t.id";
+				break;
+			case "is_released":
+				fieldName = "f.is_released";
 				break;
 		}
 

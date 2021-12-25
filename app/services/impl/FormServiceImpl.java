@@ -67,6 +67,7 @@ public class FormServiceImpl implements FormService
         }
 
         Form form = new Form(request);
+        form.setReleased(true);
 
         return this.formRepository.save(form);
     }
