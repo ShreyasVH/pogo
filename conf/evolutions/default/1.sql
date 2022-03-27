@@ -1,3 +1,5 @@
+-- !Ups
+
 CREATE TABLE `types` (
     `id`                          int unsigned AUTO_INCREMENT NOT NULL,
     `name`                        varchar(100) NOT NULL,
@@ -42,3 +44,11 @@ ALTER TABLE pokemons ADD CONSTRAINT fk_pokemons_regions_id FOREIGN KEY (`region_
 
 ALTER TABLE candy_map ADD CONSTRAINT fk_candy_map_pokemon_number FOREIGN KEY (`pokemon_number`) REFERENCES `pokemons` (`number`) on DELETE RESTRICT ON UPDATE RESTRICT;
 ALTER TABLE candy_map ADD CONSTRAINT fk_candy_map_candy_number FOREIGN KEY (`candy_pokemon_number`) REFERENCES `pokemons` (`number`) on DELETE RESTRICT ON UPDATE RESTRICT;
+
+-- !Downs
+
+DROP TABLE `candy_map`;
+DROP TABLE `pokemons`;
+DROP TABLE `items`;
+DROP TABLE `regions`;
+DROP TABLE `types`;

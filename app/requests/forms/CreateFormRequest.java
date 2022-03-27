@@ -16,7 +16,12 @@ public class CreateFormRequest
     private Integer number;
     private String imageUrl;
     private Long releaseDate;
-//    private boolean isAlolan;
+    private boolean isAlolan = false;
+    private boolean isGalarian = false;
+    private boolean isHisuian = false;
+    private boolean isShiny = false;
+    private boolean isFemale = false;
+    private boolean isCostumed = false;
 
     public void validate()
     {

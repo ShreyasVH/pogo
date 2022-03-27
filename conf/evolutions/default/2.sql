@@ -1,3 +1,5 @@
+-- !Ups
+
 INSERT INTO `types` (`id`, `name`) VALUES
 ("1", "Bug"),
 ("2", "Dark"),
@@ -36,3 +38,9 @@ INSERT INTO `items` (`id`, `name`) VALUES
 ("5", "King's Rock"),
 ("6", "Dragon Scale"),
 ("7", "Upgrade");
+
+-- !Downs
+
+DELETE FROM `items`;
+DELETE FROM `regions`;
+DELETE FROM `types`;

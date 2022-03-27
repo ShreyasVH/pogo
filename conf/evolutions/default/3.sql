@@ -1,3 +1,5 @@
+-- !Ups
+
 CREATE TABLE `forms` (
     `id`                          int unsigned AUTO_INCREMENT NOT NULL,
     `name`                        varchar(100) NOT NULL,
@@ -9,3 +11,7 @@ CREATE TABLE `forms` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 ALTER TABLE forms ADD CONSTRAINT fk_forms_pokemon_number FOREIGN KEY (`pokemon_number`) REFERENCES `pokemons` (`number`) on DELETE RESTRICT ON UPDATE RESTRICT;
+
+-- !Downs
+
+DROP TABLE `forms`;

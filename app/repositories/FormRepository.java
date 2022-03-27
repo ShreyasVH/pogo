@@ -132,7 +132,7 @@ public class FormRepository
 		response.setOffset(filterRequest.getOffset());
 		List<Map<String, Object>> forms = new ArrayList<>();
 
-		String query = "select f.name as formName, f.id as formId, f.pokemon_number as pokemonNumber, p.name as pokemonName , f.image_url as imageUrl from forms f " +
+		String query = "select f.name as formName, f.id as formId, f.pokemon_number as pokemonNumber, p.name as pokemonName , f.image_url as imageUrl, f.is_costumed as isCostumed, f.is_shiny as isShiny, f.is_female as isFemale, f.is_alolan as isAlolan, f.is_galarian as isGalarian, f.is_hisuian as isHisuian from forms f " +
 				"inner join pokemons p on p.number = f.pokemon_number";
 
 		String countQuery = "select count(distinct f.id) as count from forms f " +
@@ -213,6 +213,12 @@ public class FormRepository
 				entry.put("pokemonName", row.getString("pokemonName"));
 				entry.put("pokemonNumber", row.getInteger("pokemonNumber"));
 				entry.put("imageUrl", row.getString("imageUrl"));
+				entry.put("isCostumed", row.getBoolean("isCostumed"));
+				entry.put("isFemale", row.getBoolean("isFemale"));
+				entry.put("isShiny", row.getBoolean("isShiny"));
+				entry.put("isAlolan", row.getBoolean("isAlolan"));
+				entry.put("isGalarian", row.getBoolean("isGalarian"));
+				entry.put("isHisuian", row.getBoolean("isHisuian"));
 
 				forms.add(entry);
 			}

@@ -38,23 +38,26 @@ public class Form extends Model
     @Column
     private Long releaseDate;
 
-//    @Column
-//    private boolean isAlolan;
-//
-//    @Column
-//    private boolean isGalarian;
-//
+    @Column
+    private boolean isAlolan;
+
+    @Column
+    private boolean isGalarian;
+
+    @Column
+    private boolean isHisuian;
+
 //    @Column
 //    private boolean isShadow;
 //
-//    @Column
-//    private boolean isShiny;
-//
-//    @Column
-//    private boolean isFemale;
-//
-//    @Column
-//    private boolean isCostumed;
+    @Column
+    private boolean isShiny;
+
+    @Column
+    private boolean isFemale;
+
+    @Column
+    private boolean isCostumed;
 
     @Column
     private boolean isReleased;
@@ -65,5 +68,11 @@ public class Form extends Model
         this.imageUrl = request.getImageUrl();
         this.releaseDate = request.getReleaseDate();
         this.pokemonNumber = request.getNumber();
+        this.isCostumed = request.isCostumed();
+        this.isAlolan = request.isAlolan();
+        this.isGalarian = request.isGalarian();
+        this.isHisuian = request.isHisuian();
+        this.isFemale = request.isFemale();
+        this.isShiny = request.isShiny();
     }
 }

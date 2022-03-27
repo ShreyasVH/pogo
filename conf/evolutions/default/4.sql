@@ -1,3 +1,5 @@
+-- !Ups
+
 CREATE TABLE `events` (
      `id`                          int unsigned AUTO_INCREMENT NOT NULL,
      `name`                        varchar(100) NOT NULL,
@@ -13,3 +15,8 @@ CREATE TABLE `event_forms` (
      `form_id`                     int unsigned NOT NULL,
      PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- !Downs
+
+DROP TABLE `event_forms`;
+DROP TABLE `events`;
