@@ -155,17 +155,17 @@ public class FormRepository
 			}
 		}
 
-//		for(Map.Entry<String, List<String>> entry: filterRequest.getFilters().entrySet())
-//		{
-//			String field = entry.getKey();
-//			List<String> valueList = entry.getValue();
-//
-//			String fieldNameWithTablePrefix = getFieldNameWithTablePrefix(field);
-//			if(!fieldNameWithTablePrefix.isEmpty() && !valueList.isEmpty())
-//			{
-//				whereQueryParts.add(fieldNameWithTablePrefix + " in (" + String.join(", ", valueList) + ")");
-//			}
-//		}
+		for(Map.Entry<String, Boolean> entry: filterRequest.getBooleanFilters().entrySet())
+		{
+			String field = entry.getKey();
+			Boolean value = entry.getValue();
+
+			String fieldNameWithTablePrefix = getFieldNameWithTablePrefix(field);
+			if(!fieldNameWithTablePrefix.isEmpty() && null != value)
+			{
+				whereQueryParts.add(fieldNameWithTablePrefix + " = " + value);
+			}
+		}
 
 		if(!whereQueryParts.isEmpty())
 		{
@@ -248,6 +248,24 @@ public class FormRepository
 				break;
 			case "is_released":
 				fieldName = "f.is_released";
+				break;
+			case "is_alolan":
+				fieldName = "f.is_alolan";
+				break;
+			case "is_galarian":
+				fieldName = "f.is_galarian";
+				break;
+			case "is_hisuian":
+				fieldName = "f.is_hisuian";
+				break;
+			case "is_female":
+				fieldName = "f.is_female";
+				break;
+			case "is_shiny":
+				fieldName = "f.is_shiny";
+				break;
+			case "is_costumed":
+				fieldName = "f.is_costumed";
 				break;
 		}
 
