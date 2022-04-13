@@ -23,6 +23,7 @@ import responses.FormSnippet;
 import services.ElasticService;
 import services.FormService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -166,6 +167,70 @@ public class FormServiceImpl implements FormService
         {
             isUpdateRequired = true;
             existingForm.setImageUrl(request.getImageUrl());
+        }
+
+        if(null != request.getIsAlolan() && !request.getIsAlolan().equals(existingForm.isAlolan()))
+        {
+            isUpdateRequired = true;
+            existingForm.setAlolan(request.getIsAlolan());
+        }
+
+        if(null != request.getIsGalarian() && !request.getIsGalarian().equals(existingForm.isGalarian()))
+        {
+            isUpdateRequired = true;
+            existingForm.setGalarian(request.getIsGalarian());
+        }
+
+        if(null != request.getIsHisuian() && !request.getIsHisuian().equals(existingForm.isHisuian()))
+        {
+            isUpdateRequired = true;
+            existingForm.setHisuian(request.getIsHisuian());
+        }
+
+        if(null != request.getIsShiny() && !request.getIsShiny().equals(existingForm.isShiny()))
+        {
+            isUpdateRequired = true;
+            existingForm.setShiny(request.getIsShiny());
+        }
+
+        if(null != request.getIsFemale() && !request.getIsFemale().equals(existingForm.isFemale()))
+        {
+            isUpdateRequired = true;
+            existingForm.setFemale(request.getIsFemale());
+        }
+
+        if(null != request.getIsCostumed() && !request.getIsCostumed().equals(existingForm.isCostumed()))
+        {
+            isUpdateRequired = true;
+            existingForm.setCostumed(request.getIsCostumed());
+        }
+
+        if(null != request.getTypes())
+        {
+            List<FormTypeMap> formTypeMaps = this.formTypeMapRepository.get(existingForm.getId());
+            List<Long> existingTypeIds = formTypeMaps.stream().map(FormTypeMap::getTypeId).collect(Collectors.toList());
+            if(!request.getTypes().containsAll(existingTypeIds) || !existingTypeIds.containsAll(request.getTypes()))
+            {
+                List<FormTypeMap> typesToDelete = formTypeMaps
+                    .stream()
+                    .filter(formTypeMap -> !request.getTypes().contains(formTypeMap.getTypeId()))
+                    .collect(Collectors.toList());
+
+                List<FormTypeMap> typesToAdd = request.getTypes()
+                    .stream()
+                    .filter(typeId -> !existingTypeIds.contains(typeId))
+                    .map(typeId -> {
+                        FormTypeMap formTypeMap = new FormTypeMap();
+                        formTypeMap.setFormId(id);
+                        formTypeMap.setTypeId(typeId);
+
+                        return formTypeMap;
+                    })
+                    .collect(Collectors.toList());
+
+                this.formTypeMapRepository.save(typesToAdd);
+                this.formTypeMapRepository.remove(typesToDelete);
+            }
         }
 
         if(isUpdateRequired)

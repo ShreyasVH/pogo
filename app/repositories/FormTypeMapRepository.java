@@ -51,6 +51,22 @@ public class FormTypeMapRepository
 		}
 	}
 
+	public void remove(List<FormTypeMap> list)
+	{
+		if(!list.isEmpty())
+		{
+			try
+			{
+				this.db.deleteAll(list);
+			}
+			catch (Exception ex)
+			{
+				String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+				throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+			}
+		}
+	}
+
 	public List<FormTypeMap> get(Long formId)
 	{
 		List<FormTypeMap> list = new ArrayList<>();
