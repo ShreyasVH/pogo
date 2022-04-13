@@ -5,6 +5,7 @@ import play.libs.Json;
 
 import com.google.inject.Inject;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
 import play.libs.concurrent.HttpExecutionContext;
@@ -29,6 +30,7 @@ public class RegionController extends BaseController
 
 	public CompletionStage<Result> getAll()
 	{
-		return this.regionService.getAll().thenApplyAsync(list -> ok(Json.toJson(list)), this.httpExecutionContext.current());
+		return CompletableFuture.supplyAsync(this.regionService::getAll, this.httpExecutionContext.current())
+				.thenApplyAsync(list -> ok(Json.toJson(list)), this.httpExecutionContext.current());
 	}
 }

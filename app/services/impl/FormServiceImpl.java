@@ -1,56 +1,91 @@
 package services.impl;
 
 import com.google.inject.Inject;
+import enums.ErrorCode;
+import exceptions.BadRequestException;
 import exceptions.ConflictException;
 import exceptions.NotFoundException;
-import models.Form;
-import models.Pokemon;
+import io.ebean.Ebean;
+import io.ebean.Transaction;
+import models.*;
+import org.elasticsearch.action.search.SearchRequest;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.util.StringUtils;
-import repositories.FormRepository;
-import repositories.PokemonRepository;
+import repositories.*;
 import requests.forms.CreateFormRequest;
 import requests.forms.FilterRequest;
 import requests.forms.UpdateRequest;
 import responses.FilterResponse;
 import responses.FormSnippet;
+import services.ElasticService;
 import services.FormService;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class FormServiceImpl implements FormService
 {
     private final PokemonRepository pokemonRepository;
     private final FormRepository formRepository;
+    private final FormTypeMapRepository formTypeMapRepository;
+    private final RegionRepository regionRepository;
+    private final TypeRepository typeRepository;
+
+    private final ElasticService elasticService;
 
 
     @Inject
     public FormServiceImpl
     (
         PokemonRepository pokemonRepository,
-        FormRepository formRepository
+        FormRepository formRepository,
+        FormTypeMapRepository formTypeMapRepository,
+        RegionRepository regionRepository,
+        TypeRepository typeRepository,
+        ElasticService elasticService
     )
     {
         this.pokemonRepository = pokemonRepository;
         this.formRepository = formRepository;
+        this.formTypeMapRepository = formTypeMapRepository;
+        this.regionRepository = regionRepository;
+        this.typeRepository = typeRepository;
+
+        this.elasticService = elasticService;
     }
 
-    public FormSnippet formSnippet(Form form)
+    public FormSnippet formSnippet(Form form, List<Type> types)
     {
-        FormSnippet formSnippet = new FormSnippet(form);
+        if(null == types)
+        {
+            List<FormTypeMap> formTypeMaps = this.formTypeMapRepository.get(form.getId());
+            types = this.typeRepository.get(formTypeMaps.stream().map(FormTypeMap::getTypeId).collect(Collectors.toList()));
+        }
+
+        FormSnippet formSnippet = new FormSnippet(form, types);
 
         Pokemon pokemon = this.pokemonRepository.getByNumber(form.getPokemonNumber());
         if(null == pokemon)
         {
             throw new NotFoundException("Pokemon");
         }
-        formSnippet.setPokemon(pokemon);
+        formSnippet.setPokemonNumber(pokemon.getNumber());
+        formSnippet.setPokemonName(pokemon.getName());
+        formSnippet.setRegionId(pokemon.getRegionId());
+
+        List<Region> allRegions = regionRepository.getAll();
+        Map<Long, Region> regionMap = allRegions.stream().collect(Collectors.toMap(Region::getId, region -> region));
+        formSnippet.setRegionName(regionMap.get(pokemon.getRegionId()).getName());
 
         return formSnippet;
     }
 
     @Override
-    public Form add(CreateFormRequest request)
+    public FormSnippet add(CreateFormRequest request)
     {
         request.validate();
 
@@ -60,26 +95,51 @@ public class FormServiceImpl implements FormService
             throw new ConflictException("Form");
         }
 
-        Pokemon pokemon = this.pokemonRepository.getByNumber(request.getNumber());
-        if(null == pokemon)
+        Transaction transaction = Ebean.beginTransaction();
+        try
         {
-            throw new NotFoundException("Pokemon");
+            Pokemon pokemon = this.pokemonRepository.getByNumber(request.getNumber());
+            if(null == pokemon)
+            {
+                throw new NotFoundException("Pokemon");
+            }
+
+            Form form = new Form(request);
+            form.setReleased(true);
+
+            Form addedForm = this.formRepository.save(form);
+
+            List<FormTypeMap> formTypeMaps = request.getTypes().stream().map(type -> {
+                FormTypeMap formTypeMap = new FormTypeMap();
+                formTypeMap.setFormId(addedForm.getId());
+                formTypeMap.setTypeId(type);
+
+                return formTypeMap;
+            }).collect(Collectors.toList());
+
+            this.formTypeMapRepository.save(formTypeMaps);
+
+            transaction.commit();
+            this.elasticService.index("forms", addedForm.getId().toString(), this.formSnippet(addedForm, null));
+
+            return formSnippet(addedForm, null);
         }
-
-        Form form = new Form(request);
-        form.setReleased(true);
-
-        return this.formRepository.save(form);
+        catch (Exception ex)
+        {
+            transaction.rollback();
+            transaction.end();
+            throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), ErrorCode.INVALID_REQUEST.getDescription());
+        }
     }
 
     @Override
     public FormSnippet get(Long id)
     {
-        return this.formSnippet(this.formRepository.get(id));
+        return this.formSnippet(this.formRepository.get(id), null);
     }
 
     @Override
-    public Form update(UpdateRequest request, Long id)
+    public FormSnippet update(UpdateRequest request, Long id)
     {
         request.validate();
 
@@ -113,11 +173,72 @@ public class FormServiceImpl implements FormService
             existingForm = this.formRepository.save(existingForm);
         }
 
-        return existingForm;
+        return formSnippet(existingForm, null);
     }
 
     @Override
-    public FilterResponse filter(FilterRequest request) {
-        return this.formRepository.filter(request);
+    public FilterResponse<FormSnippet> filter(FilterRequest request) {
+        return this.elasticService.search(getElasticRequest(request), FormSnippet.class);
+    }
+
+    private SearchRequest getElasticRequest(FilterRequest filterRequest)
+    {
+        SearchRequest request = new SearchRequest("forms");
+
+        SearchSourceBuilder builder = new SearchSourceBuilder();
+        builder.from(filterRequest.getOffset());
+        builder.size(filterRequest.getCount());
+
+        BoolQueryBuilder query = QueryBuilders.boolQuery();
+
+        for(Map.Entry<String, List<String>> entry: filterRequest.getFilters().entrySet())
+        {
+            String key = entry.getKey();
+            List<String> valueList = entry.getValue();
+            if (!valueList.isEmpty())
+            {
+                query.must(QueryBuilders.termsQuery(key, valueList));
+            }
+        }
+
+        for(Map.Entry<String, List<String>> entry: filterRequest.getAndFilters().entrySet())
+        {
+            String key = entry.getKey();
+            List<String> valueList = entry.getValue();
+            if (!valueList.isEmpty())
+            {
+                for(String value: valueList)
+                {
+                    query.must(QueryBuilders.termQuery(key, value));
+                }
+            }
+        }
+
+        for(Map.Entry<String, Boolean> entry: filterRequest.getBooleanFilters().entrySet())
+        {
+            String key = entry.getKey();
+            Boolean value = entry.getValue();
+            query.must(QueryBuilders.termQuery(key, value));
+        }
+
+        builder.query(query);
+
+        Map<String, SortOrder> sortMap = filterRequest.getSortMap();
+        for(Map.Entry<String, SortOrder> sortField: sortMap.entrySet())
+        {
+            String key = sortField.getKey();
+            SortOrder order = sortField.getValue();
+
+            String sortKey = (key + ".sort");
+            builder.sort(sortKey, order);
+        }
+
+        if(!sortMap.containsKey("pokemonNumber"))
+        {
+            builder.sort("pokemonNumber.sort", SortOrder.ASC);
+        }
+
+        request.source(builder);
+        return request;
     }
 }

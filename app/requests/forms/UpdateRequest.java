@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Setter
 public class UpdateRequest
@@ -14,6 +17,7 @@ public class UpdateRequest
     private Integer number;
     private String imageUrl;
     private Long releaseDate;
+    private List<Long> types = new ArrayList<>();
 
     public void validate()
     {

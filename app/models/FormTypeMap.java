@@ -12,21 +12,21 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "type_map")
+@Table(name = "form_type_map")
 @Getter
 @Setter
 @Cache(enableQueryCache=true)
 @CacheQueryTuning(maxSecsToLive = 3600)
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class PokemonTypeMap extends Model
+public class FormTypeMap extends Model
 {
     @Id
     @Column
     private Long id;
 
     @Column
-    private Long pokemonId;
+    private Long formId;
 
     @Column
     private Long typeId;
