@@ -5,7 +5,11 @@ import enums.ErrorCode;
 import exceptions.BadRequestException;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,6 +26,7 @@ public class CreateFormRequest
     private boolean isShiny = false;
     private boolean isFemale = false;
     private boolean isCostumed = false;
+    private List<Long> types = new ArrayList<>();
 
     public void validate()
     {
@@ -38,6 +43,11 @@ public class CreateFormRequest
         if(this.number < 0)
         {
             throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Invalid number");
+        }
+
+        if(CollectionUtils.isEmpty(types))
+        {
+            throw new BadRequestException(ErrorCode.INVALID_REQUEST.getCode(), "Invalid Types");
         }
     }
 }

@@ -6,7 +6,7 @@ import io.ebean.Ebean;
 import io.ebean.EbeanServer;
 import play.db.ebean.EbeanConfig;
 
-import models.PokemonTypeMap;
+import models.FormTypeMap;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +16,14 @@ import modules.DatabaseExecutionContext;
 
 import play.db.ebean.EbeanDynamicEvolutions;
 
-public class PokemonTypeMapRepository
+public class FormTypeMapRepository
 {
 	private final EbeanServer db;
 	private final EbeanDynamicEvolutions ebeanDynamicEvolutions;
 	private final DatabaseExecutionContext databaseExecutionContext;
 
 	@Inject
-	public PokemonTypeMapRepository
+	public FormTypeMapRepository
 	(
 		EbeanConfig ebeanConfig,
 		EbeanDynamicEvolutions ebeanDynamicEvolutions,
@@ -35,7 +35,7 @@ public class PokemonTypeMapRepository
 		this.databaseExecutionContext = databaseExecutionContext;
 	}
 
-	public void save(List<PokemonTypeMap> list)
+	public void save(List<FormTypeMap> list)
 	{
 		if(!list.isEmpty())
 		{
@@ -51,13 +51,13 @@ public class PokemonTypeMapRepository
 		}
 	}
 
-	public List<PokemonTypeMap> get(Long pokemonId)
+	public List<FormTypeMap> get(Long formId)
 	{
-		List<PokemonTypeMap> list = new ArrayList<>();
+		List<FormTypeMap> list = new ArrayList<>();
 
 		try
 		{
-			list = this.db.find(PokemonTypeMap.class).where().eq("pokemonId", pokemonId).findList();
+			list = this.db.find(FormTypeMap.class).where().eq("formId", formId).findList();
 		}
 		catch (Exception ex)
 		{

@@ -5,7 +5,6 @@ import exceptions.DBInteractionException;
 import io.ebean.Ebean;
 import io.ebean.EbeanServer;
 import models.PokemonItemMap;
-import models.PokemonTypeMap;
 import play.db.ebean.EbeanConfig;
 
 import java.util.ArrayList;

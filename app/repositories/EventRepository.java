@@ -8,6 +8,7 @@ import io.ebean.SqlQuery;
 import io.ebean.SqlRow;
 import models.Event;
 import models.Form;
+import org.elasticsearch.search.sort.SortOrder;
 import play.db.ebean.EbeanConfig;
 
 import models.Type;
@@ -142,10 +143,10 @@ public class EventRepository
 
         //sort
         List<String> sortList = new ArrayList<>();
-        for(Map.Entry<String, String> entry: filterRequest.getSortMap().entrySet())
+        for(Map.Entry<String, SortOrder> entry: filterRequest.getSortMap().entrySet())
         {
             String field = entry.getKey();
-            String value = entry.getValue();
+            SortOrder value = entry.getValue();
 
             String sortFieldName = getFieldNameForDisplay(field);
             if(!sortFieldName.isEmpty())
@@ -166,7 +167,7 @@ public class EventRepository
         {
             SqlQuery sqlCountQuery = this.db.createSqlQuery(countQuery);
             List<SqlRow> countResult = sqlCountQuery.findList();
-            response.setTotalCount(countResult.get(0).getInteger("count"));
+            response.setTotalCount(countResult.get(0).getLong("count"));
 
             SqlQuery sqlQuery = this.db.createSqlQuery(query);
             List<SqlRow> result = sqlQuery.findList();

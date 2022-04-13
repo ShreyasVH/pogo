@@ -1,0 +1,122 @@
+{
+  "aliases": {},
+  "mappings": {
+    "properties": {
+      "id": {
+        "type": "integer",
+        "fields": {
+          "sort": {
+            "type": "integer"
+          }
+        }
+      },
+      "name": {
+        "type": "keyword",
+        "fields": {
+          "sort": {
+            "type": "keyword"
+          }
+        }
+      },
+      "pokemonName": {
+        "type": "keyword",
+        "fields": {
+          "sort": {
+            "type": "keyword"
+          }
+        }
+      },
+      "pokemonNumber": {
+        "type": "integer",
+        "fields": {
+          "sort": {
+            "type": "integer"
+          }
+        }
+      },
+      "regionId": {
+        "type": "integer"
+      },
+      "regionName": {
+        "type": "keyword"
+      },
+      "candyPokemonNumber": {
+        "type": "integer"
+      },
+      "candyPokemonName": {
+        "type": "keyword"
+      },
+      "imageUrl": {
+        "type": "keyword"
+      },
+      "releaseDate": {
+        "type": "date",
+        "fields": {
+          "sort": {
+            "type": "date"
+          }
+        }
+      },
+      "formatName": {
+        "type": "keyword"
+      },
+      "isAlolan": {
+        "type": "boolean"
+      },
+      "isGalarian": {
+        "type": "boolean"
+      },
+      "isHisuian": {
+        "type": "boolean"
+      },
+      "isShiny": {
+        "type": "boolean"
+      },
+      "isFemale": {
+        "type": "boolean"
+      },
+      "isCostumed": {
+        "type": "boolean"
+      },
+      "typeIds": {
+        "type": "integer"
+      },
+      "typeNames": {
+        "type": "keyword"
+      }
+    }
+  },
+  "settings": {
+    "index": {
+      "number_of_shards": "5",
+      "max_ngram_diff": "10",
+      "analysis": {
+        "analyzer": {
+          "my_analyzer": {
+            "type": "custom",
+            "filter": [
+              "lowercase"
+            ],
+            "tokenizer": "my_tokenizer"
+          },
+          "my_search_analyzer": {
+            "type": "custom",
+            "tokenizer": "lowercase"
+          }
+        },
+        "tokenizer": {
+          "my_tokenizer": {
+            "token_chars": [
+              "letter",
+              "digit"
+            ],
+            "min_gram": "2",
+            "max_gram": "10",
+            "type": "ngram"
+          }
+        }
+      },
+      "number_of_replicas": "1"
+    }
+  }
+}

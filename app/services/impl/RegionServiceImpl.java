@@ -24,7 +24,7 @@ public class RegionServiceImpl implements RegionService
 		this.regionRepository = regionRepository;
 	}
 
-	public CompletionStage<List<Region>> getAll()
+	public List<Region> getAll()
 	{
 		return this.regionRepository.getAll();
 	}

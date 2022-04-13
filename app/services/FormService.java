@@ -11,12 +11,12 @@ import java.util.List;
 
 public interface FormService
 {
-    Form add(CreateFormRequest request);
+    FormSnippet add(CreateFormRequest request);
 
     FormSnippet get(Long id);
 
-    Form update(UpdateRequest request, Long id);
+    FormSnippet update(UpdateRequest request, Long id);
 
-    FilterResponse filter(FilterRequest request);
+    FilterResponse<FormSnippet> filter(FilterRequest request);
 
 }

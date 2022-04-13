@@ -35,23 +35,21 @@ public class RegionRepository
 		this.databaseExecutionContext = databaseExecutionContext;
 	}
 
-	public CompletionStage<List<Region>> getAll()
+	public List<Region> getAll()
 	{
-		return CompletableFuture.supplyAsync(() -> {
-			List<Region> regions;
+		List<Region> regions;
 
-			try
-			{
-				regions = this.db.find(Region.class).orderBy("id ASC").findList();
-			}
-			catch(Exception ex)
-			{
-				String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
-				throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
-			}
+		try
+		{
+			regions = this.db.find(Region.class).orderBy("id ASC").findList();
+		}
+		catch(Exception ex)
+		{
+			String message = ErrorCode.DB_INTERACTION_FAILED.getDescription() + ". Exception: " + ex;
+			throw new DBInteractionException(ErrorCode.DB_INTERACTION_FAILED.getCode(), message);
+		}
 
-			return regions;
-		}, this.databaseExecutionContext);
+		return regions;
 	}
 
 	public Region get(Long id)
