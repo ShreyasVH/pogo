@@ -205,6 +205,7 @@ public class FormServiceImpl implements FormService
             existingForm.setCostumed(request.getIsCostumed());
         }
 
+        boolean isTypeUpdateRequired = false;
         if(null != request.getTypes())
         {
             List<FormTypeMap> formTypeMaps = this.formTypeMapRepository.get(existingForm.getId());
@@ -228,6 +229,8 @@ public class FormServiceImpl implements FormService
                     })
                     .collect(Collectors.toList());
 
+                isTypeUpdateRequired = !typesToAdd.isEmpty() || !typesToDelete.isEmpty();
+
                 this.formTypeMapRepository.save(typesToAdd);
                 this.formTypeMapRepository.remove(typesToDelete);
             }
@@ -238,7 +241,14 @@ public class FormServiceImpl implements FormService
             existingForm = this.formRepository.save(existingForm);
         }
 
-        return formSnippet(existingForm, null);
+        FormSnippet formSnippet = formSnippet(existingForm, null);
+
+        if(isUpdateRequired || isTypeUpdateRequired)
+        {
+            this.elasticService.index("forms", id.toString(), formSnippet);
+        }
+
+        return formSnippet;
     }
 
     @Override
@@ -301,6 +311,11 @@ public class FormServiceImpl implements FormService
         if(!sortMap.containsKey("pokemonNumber"))
         {
             builder.sort("pokemonNumber.sort", SortOrder.ASC);
+        }
+
+        if(!sortMap.containsKey("id"))
+        {
+            builder.sort("id.sort", SortOrder.ASC);
         }
 
         request.source(builder);
